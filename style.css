@@ -1,0 +1,199 @@
+/* =========================
+   RESET BÁSICO
+========================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+/* =========================
+   BODY
+========================= */
+body {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+/* =========================
+   CABECERA
+========================= */
+.cabecera {
+    background: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.cabecera h2, .cabecera p, .cabecera h3 {
+    margin: 6px 0;
+}
+
+.cabecera p {
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+/* =========================
+   TÍTULO
+========================= */
+h1 {
+    margin: 15px 0;
+    font-size: 28px;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+}
+
+/* =========================
+   TABLERO SUDOKU
+========================= */
+#sudoku-board {
+    display: grid;
+    grid-template-columns: repeat(9, 45px);
+    grid-template-rows: repeat(9, 45px);
+    justify-content: center;
+    margin: 20px auto;
+    border: 3px solid #000;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+/* Celdas */
+#sudoku-board input {
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    font-size: 18px;
+    border: 1px solid #999;
+    border-radius: 0;
+    background: rgba(255,255,255,0.8);
+    transition: 0.2s;
+}
+
+/* Efecto foco */
+#sudoku-board input:focus {
+    outline: none;
+    background-color: #e6f2ff;
+}
+
+/* Líneas gruesas verticales cada 3 columnas */
+#sudoku-board input:nth-child(3n+1) {
+    border-left: 3px solid black;
+}
+#sudoku-board input:nth-child(9n) {
+    border-right: 3px solid black;
+}
+
+/* Líneas gruesas horizontales cada 3 filas */
+#sudoku-board input:nth-child(n+1):nth-child(-n+9),
+#sudoku-board input:nth-child(n+28):nth-child(-n+36),
+#sudoku-board input:nth-child(n+55):nth-child(-n+63) {
+    border-top: 3px solid black;
+}
+#sudoku-board input:nth-child(n+73):nth-child(-n+81) {
+    border-bottom: 3px solid black;
+}
+
+/* =========================
+   ESTADOS DE CELDAS
+========================= */
+.celda-bloqueada {
+    background-color: #ddd;
+    font-weight: bold;
+}
+
+.error {
+    background-color: #ffb3b3;
+}
+
+.correcto {
+    background-color: #b3ffb3;
+}
+
+/* =========================
+   CONTROLES
+========================= */
+.controles {
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+button, select {
+    padding: 10px 15px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Botones */
+button {
+    background: linear-gradient(135deg, #ffcc00, #ff9900);
+    color: #111;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #ffdb4d, #ffb84d);
+}
+
+/* Select */
+select {
+    background: rgba(255,255,255,0.9);
+    color: #111;
+}
+
+/* =========================
+   MENSAJE
+========================= */
+#mensaje {
+    font-size: 20px;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #00ff88;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* =========================
+   ANIMACIÓN GANADOR
+========================= */
+.ganador {
+    animation: brillo 1s infinite alternate;
+}
+
+@keyframes brillo {
+    from { box-shadow: 0 0 5px gold; }
+    to { box-shadow: 0 0 20px gold; }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 600px) {
+    #sudoku-board {
+        grid-template-columns: repeat(9, 32px);
+        grid-template-rows: repeat(9, 32px);
+    }
+
+    #sudoku-board input {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    button, select {
+        font-size: 13px;
+        padding: 8px;
+    }
+}
