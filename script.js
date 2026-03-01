@@ -1,21 +1,35 @@
+document.addEventListener("DOMContentLoaded", function () {
+
 const boardElement = document.getElementById("sudoku-board");
+const mensaje = document.getElementById("mensaje");
 
 let tableroInicial = [];
 let tableroSolucion = [];
 
-// Crear tablero visual
+/* =========================
+   CREAR TABLERO
+========================= */
 function crearTablero() {
     boardElement.innerHTML = "";
+
     for (let i = 0; i < 81; i++) {
         const input = document.createElement("input");
         input.type = "number";
         input.min = 1;
         input.max = 9;
+
+        // Evitar números mayores a 9
+        input.addEventListener("input", () => {
+            if (input.value > 9) input.value = "";
+        });
+
         boardElement.appendChild(input);
     }
 }
 
-// Sudoku base resuelto
+/* =========================
+   SUDOKU BASE
+========================= */
 const sudokuBase = [
     [5,3,4,6,7,8,9,1,2],
     [6,7,2,1,9,5,3,4,8],
@@ -28,15 +42,20 @@ const sudokuBase = [
     [3,4,5,2,8,6,1,7,9]
 ];
 
-// Generar juego según dificultad
+/* =========================
+   NUEVO JUEGO
+========================= */
 function nuevoJuego() {
+
+    mensaje.style.opacity = 0;
+    boardElement.classList.remove("ganador");
+
     const nivel = document.getElementById("nivel").value;
 
     tableroInicial = JSON.parse(JSON.stringify(sudokuBase));
     tableroSolucion = JSON.parse(JSON.stringify(sudokuBase));
 
     let celdasEliminar = 30;
-
     if (nivel === "medio") celdasEliminar = 40;
     if (nivel === "dificil") celdasEliminar = 50;
 
@@ -53,14 +72,17 @@ function nuevoJuego() {
     mostrarTablero(tableroInicial);
 }
 
-// Mostrar tablero en pantalla
+/* =========================
+   MOSTRAR TABLERO
+========================= */
 function mostrarTablero(tablero) {
     const inputs = document.querySelectorAll("#sudoku-board input");
 
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
+
             let input = inputs[i * 9 + j];
-            input.classList.remove("celda-bloqueada");
+            input.classList.remove("celda-bloqueada", "error", "correcto");
 
             if (tablero[i][j] !== 0) {
                 input.value = tablero[i][j];
@@ -74,10 +96,9 @@ function mostrarTablero(tablero) {
     }
 }
 
-
-crearTablero();
-nuevoJuego();
-
+/* =========================
+   OBTENER TABLERO ACTUAL
+========================= */
 function obtenerTableroActual() {
     const inputs = document.querySelectorAll("#sudoku-board input");
     let tablero = [];
@@ -93,17 +114,20 @@ function obtenerTableroActual() {
     return tablero;
 }
 
+/* =========================
+   VERIFICAR
+========================= */
 function verificar() {
-    const inputs = document.querySelectorAll("#sudoku-board input");
+
     let tableroActual = obtenerTableroActual();
+    const inputs = document.querySelectorAll("#sudoku-board input");
     let errores = 0;
 
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
 
             let input = inputs[i * 9 + j];
-            input.classList.remove("error");
-            input.classList.remove("correcto");
+            input.classList.remove("error", "correcto");
 
             if (!input.disabled && tableroActual[i][j] !== 0) {
 
@@ -118,24 +142,34 @@ function verificar() {
     }
 
     if (errores === 0) {
-        alert("¡Todo correcto hasta ahora!");
+
+        if (verificarVictoria()) {
+            mensaje.innerText = "🎉 ¡FELICIDADES! Sudoku Completado 🎉";
+            mensaje.style.opacity = 1;
+            boardElement.classList.add("ganador");
+        } else {
+            alert("Todo correcto hasta ahora.");
+        }
+
     } else {
         alert("Tienes " + errores + " errores.");
     }
 }
 
+/* =========================
+   PISTA
+========================= */
 function pista() {
-    const inputs = document.querySelectorAll("#sudoku-board input");
+
     let tableroActual = obtenerTableroActual();
+    const inputs = document.querySelectorAll("#sudoku-board input");
 
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
 
             if (tableroActual[i][j] === 0) {
-
                 inputs[i * 9 + j].value = tableroSolucion[i][j];
                 inputs[i * 9 + j].classList.add("correcto");
-
                 return;
             }
         }
@@ -144,7 +178,11 @@ function pista() {
     alert("No hay más pistas disponibles.");
 }
 
+/* =========================
+   VERIFICAR VICTORIA
+========================= */
 function verificarVictoria() {
+
     let tableroActual = obtenerTableroActual();
 
     for (let i = 0; i < 9; i++) {
@@ -157,3 +195,32 @@ function verificarVictoria() {
 
     return true;
 }
+
+/* =========================
+   RESOLVER
+========================= */
+function resolverSudoku() {
+
+    mostrarTablero(tableroSolucion);
+
+    mensaje.innerText = "✨ Sudoku Resuelto Automáticamente ✨";
+    mensaje.style.opacity = 1;
+    boardElement.classList.add("ganador");
+}
+
+/* =========================
+   EVENTOS
+========================= */
+document.getElementById("btnNuevo").addEventListener("click", nuevoJuego);
+document.getElementById("btnVerificar").addEventListener("click", verificar);
+document.getElementById("btnPista").addEventListener("click", pista);
+document.getElementById("btnResolver").addEventListener("click", resolverSudoku);
+
+/* =========================
+   INICIALIZAR
+========================= */
+crearTablero();
+nuevoJuego();
+
+});
+
