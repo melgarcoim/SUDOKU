@@ -18,7 +18,6 @@ function crearTablero() {
         input.min = 1;
         input.max = 9;
 
-        // Evitar números mayores a 9
         input.addEventListener("input", () => {
             if (input.value > 9) input.value = "";
         });
@@ -28,19 +27,77 @@ function crearTablero() {
 }
 
 /* =========================
-   SUDOKU BASE
+   GENERAR TABLERO VACÍO
 ========================= */
-const sudokuBase = [
-    [5,3,4,6,7,8,9,1,2],
-    [6,7,2,1,9,5,3,4,8],
-    [1,9,8,3,4,2,5,6,7],
-    [8,5,9,7,6,1,4,2,3],
-    [4,2,6,8,5,3,7,9,1],
-    [7,1,3,9,2,4,8,5,6],
-    [9,6,1,5,3,7,2,8,4],
-    [2,8,7,4,1,9,6,3,5],
-    [3,4,5,2,8,6,1,7,9]
-];
+function crearTableroVacio() {
+    let tablero = [];
+    for (let i = 0; i < 9; i++) {
+        tablero[i] = [];
+        for (let j = 0; j < 9; j++) {
+            tablero[i][j] = 0;
+        }
+    }
+    return tablero;
+}
+
+/* =========================
+   VALIDAR MOVIMIENTO
+========================= */
+function esValido(tablero, fila, col, num) {
+
+    for (let x = 0; x < 9; x++) {
+        if (tablero[fila][x] === num) return false;
+        if (tablero[x][col] === num) return false;
+    }
+
+    let inicioFila = fila - fila % 3;
+    let inicioCol = col - col % 3;
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (tablero[inicioFila + i][inicioCol + j] === num) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+/* =========================
+   BACKTRACKING REAL
+========================= */
+function resolverBacktracking(tablero) {
+
+    for (let fila = 0; fila < 9; fila++) {
+        for (let col = 0; col < 9; col++) {
+
+            if (tablero[fila][col] === 0) {
+
+                let numeros = [1,2,3,4,5,6,7,8,9];
+                numeros.sort(() => Math.random() - 0.5);
+
+                for (let num of numeros) {
+
+                    if (esValido(tablero, fila, col, num)) {
+
+                        tablero[fila][col] = num;
+
+                        if (resolverBacktracking(tablero)) {
+                            return true;
+                        }
+
+                        tablero[fila][col] = 0; // retroceso
+                    }
+                }
+
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
 
 /* =========================
    NUEVO JUEGO
@@ -50,10 +107,13 @@ function nuevoJuego() {
     mensaje.style.opacity = 0;
     boardElement.classList.remove("ganador");
 
-    const nivel = document.getElementById("nivel").value;
+    let tablero = crearTableroVacio();
+    resolverBacktracking(tablero);
 
-    tableroInicial = JSON.parse(JSON.stringify(sudokuBase));
-    tableroSolucion = JSON.parse(JSON.stringify(sudokuBase));
+    tableroSolucion = JSON.parse(JSON.stringify(tablero));
+    tableroInicial = JSON.parse(JSON.stringify(tablero));
+
+    const nivel = document.getElementById("nivel").value;
 
     let celdasEliminar = 30;
     if (nivel === "medio") celdasEliminar = 40;
@@ -203,7 +263,7 @@ function resolverSudoku() {
 
     mostrarTablero(tableroSolucion);
 
-    mensaje.innerText = "✨ Sudoku Resuelto Automáticamente ✨";
+    mensaje.innerText = "✨ Sudoku Resuelto con Backtracking ✨";
     mensaje.style.opacity = 1;
     boardElement.classList.add("ganador");
 }
@@ -223,4 +283,5 @@ crearTablero();
 nuevoJuego();
 
 });
+
 
